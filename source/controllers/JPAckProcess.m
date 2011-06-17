@@ -104,7 +104,7 @@ enum {
   [args addObject:term];
   [args addObject:(searchFolder) ? searchFolder : path];
 
-	NSLog(@"Args:\n\n%@", args);
+  // NSLog(@"Args:\n\n%@", args);
   [self.ackTask setArguments:args];
 
   NSPipe* stdoutPipe = [NSPipe pipe];

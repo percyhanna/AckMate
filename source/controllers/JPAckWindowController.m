@@ -251,8 +251,6 @@ NSString * const kJPAckWindowPosition = @"kJPAckWindowPosition";
   self.currentProcess = [[[JPAckProcess alloc] initWithResultHolder:ackResult] autorelease];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(currentProcessCompleted:) name:JPAckProcessComplete object:self.currentProcess];
   NSString* path = self.projectDirectory;
-	NSLog(@"Options:\n\n%@", [optionsField objectValue]);
-	
 	// allow for custom ignore directory
 	NSArray *extras = [NSArray array];
 	if ([[projectController environmentVariables] objectForKey:@"TM_ACKMATE_IGNORE_DIRS"]) {
@@ -282,7 +280,6 @@ NSString * const kJPAckWindowPosition = @"kJPAckWindowPosition";
 
 -(NSArray *) addIgnoreDirsFromString:(NSString *)value toArray:(NSArray *)options
 {
-	NSLog(@"Adding ignore dirs: %@", value);
 	NSArray *ignoreDirs = [value componentsSeparatedByString:@","];
 	for (NSString *ignoreDir in ignoreDirs) {
 		options = [options arrayByAddingObject:@"--ignore-dir"];
