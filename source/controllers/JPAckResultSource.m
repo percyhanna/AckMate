@@ -467,16 +467,16 @@ NSString* const amContentColumn  = @"amContentColumn";
 {
   NSFontManager* fm = [NSFontManager sharedFontManager];
 
-  NSFont* headingFont = [NSFont fontWithName:@"Trebuchet MS Bold" size:13.0];
+  NSFont* headingFont = [NSFont fontWithName:@"Trebuchet MS Bold" size:11.0];
   if (!headingFont)
     headingFont = [NSFont boldSystemFontOfSize:13.0];
 
-  NSFont* bodyFont = [NSFont fontWithName:@"Menlo-Regular" size:11.0];
+  NSFont* bodyFont = [NSFont fontWithName:@"Menlo-Regular" size:10.0];
   if (!bodyFont)
-    bodyFont = [NSFont fontWithName:@"Monaco" size:11.0];
+    bodyFont = [NSFont fontWithName:@"Monaco" size:10.0];
   
   if (!bodyFont)
-    bodyFont = [NSFont userFixedPitchFontOfSize:11.0];
+    bodyFont = [NSFont userFixedPitchFontOfSize:10.0];
 
   NSFont* boldBodyFont = [fm convertWeight:YES ofFont:bodyFont];
 

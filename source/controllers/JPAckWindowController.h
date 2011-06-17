@@ -74,6 +74,7 @@ extern NSString * const kJPAckWindowPosition;
 - (BOOL)running;
 - (NSString*)windowTitle;
 - (void)cleanupImmediately:(BOOL)immediately;
+- (NSArray *) addIgnoreDirsFromString:(NSString *) value toArray:(NSArray *) options;
 @end
 
 @interface NSObject (AckMateCompilerSilencing)

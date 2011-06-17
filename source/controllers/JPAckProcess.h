@@ -15,7 +15,17 @@ extern NSString * const JPAckProcessComplete;
 }
 
 - (id)initWithResultHolder:(JPAckResultSource*)resultHolder;
-- (void)invokeWithTerm:(NSString*)term path:(NSString*)path searchFolder:(NSString*)searchFolder literal:(BOOL)literal nocase:(BOOL)nocase words:(BOOL)words context:(BOOL)context symlinks:(BOOL)symlinks folderPattern:(NSString*)folderPattern options:(NSArray*)options;
+- (void)invokeWithTerm:(NSString*)term
+				  path:(NSString*)path
+		  searchFolder:(NSString*)searchFolder
+			   literal:(BOOL)literal
+				nocase:(BOOL)nocase
+				 words:(BOOL)words
+			   context:(BOOL)context
+			  symlinks:(BOOL)symlinks
+		 folderPattern:(NSString*)folderPattern
+			   options:(NSArray*)options
+				extras:(NSArray*)extras;
 
 - (void)parseData:(NSData*)data;
 - (void)saveTrailing:(char*)bytes length:(NSUInteger)length;

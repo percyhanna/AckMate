@@ -44,7 +44,17 @@ enum {
   return self;
 }
 
-- (void)invokeWithTerm:(NSString*)term path:(NSString*)path searchFolder:(NSString*)searchFolder literal:(BOOL)literal nocase:(BOOL)nocase words:(BOOL)words context:(BOOL)context symlinks:(BOOL)symlinks folderPattern:(NSString*)folderPattern options:(NSArray*)options
+- (void)invokeWithTerm:(NSString*)term
+				  path:(NSString*)path
+		  searchFolder:(NSString*)searchFolder
+			   literal:(BOOL)literal
+				nocase:(BOOL)nocase
+				 words:(BOOL)words
+			   context:(BOOL)context
+			  symlinks:(BOOL)symlinks
+		 folderPattern:(NSString*)folderPattern
+			   options:(NSArray*)options
+				extras:(NSArray*)extras
 {
   ackState = ackInitial;
   [self.ackResult clearContents];
@@ -57,7 +67,7 @@ enum {
   [self.ackTask setCurrentDirectoryPath:path];
 
   [self.ackTask setLaunchPath:@"/usr/bin/env"];
-  NSMutableArray* args = [NSMutableArray arrayWithObjects:@"perl", @"-CADS", ackmateAck, @"--ackmate", nil];
+  NSMutableArray* args = [NSMutableArray arrayWithObjects:/*@"perl", @"-CADS",*/ ackmateAck, @"--ackmate", nil];
 
   if (literal) [args addObject:@"--literal"];
   if (words) [args addObject:@"--word-regexp"];
@@ -79,13 +89,22 @@ enum {
     [args addObject:folderPattern];
   }
 
-  for (NSString* typeOption in options)
-    [args addObject:[NSString stringWithFormat:@"%@%@", ([typeOption hasPrefix:@"-"]) ? @"" : @"--", typeOption]];
+	for (NSString* typeOption in options) {
+		if ([typeOption hasPrefix:@"--type-add "]) {
+			[args addObject:@"--type-add"];
+			[args addObject:[typeOption stringByReplacingOccurrencesOfString:@"--type-add " withString:@""]];
+		} else {
+			[args addObject:[NSString stringWithFormat:@"%@%@", ([typeOption hasPrefix:@"-"]) ? @"" : @"--", typeOption]];
+		}
+	}
+	
+	[args addObjectsFromArray:extras];
 
   [args addObject:@"--match"];
   [args addObject:term];
   [args addObject:(searchFolder) ? searchFolder : path];
 
+	NSLog(@"Args:\n\n%@", args);
   [self.ackTask setArguments:args];
 
   NSPipe* stdoutPipe = [NSPipe pipe];

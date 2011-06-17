@@ -76,7 +76,12 @@
 - (NSString*)directoryForProject:(id)projectController
 {
   NSDictionary* d = [projectController environmentVariables];
-  return [d objectForKey:@"TM_PROJECT_DIRECTORY"];
+  id projectDirectory = [d objectForKey:@"ACKMATE_PROJECT_DIRECTORY"];
+  if (projectDirectory) {
+    return projectDirectory;
+  } else {
+    return [d objectForKey:@"TM_PROJECT_DIRECTORY"];
+  }
 }
 
 - (void)projectWindowWillClose:(NSNotification*)notification

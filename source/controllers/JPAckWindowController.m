@@ -6,6 +6,8 @@
 #import "JPAckProcess.h"
 #import "JPAckTypesProcess.h"
 
+#import "TextMate.h"
+
 #define ADVANCED_HEIGHT 20.0f
 
 @interface JPAckWindowController ()
@@ -249,16 +251,44 @@ NSString * const kJPAckWindowPosition = @"kJPAckWindowPosition";
   self.currentProcess = [[[JPAckProcess alloc] initWithResultHolder:ackResult] autorelease];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(currentProcessCompleted:) name:JPAckProcessComplete object:self.currentProcess];
   NSString* path = self.projectDirectory;
-  [self.currentProcess invokeWithTerm:term
-      path:path
-      searchFolder:selectedSearchFolder
-      literal:literal
-      nocase:nocase
-      words:words
-      context:context
-      symlinks:symlinks
-      folderPattern:folderPattern
-      options:[optionsField objectValue]];
+	NSLog(@"Options:\n\n%@", [optionsField objectValue]);
+	
+	// allow for custom ignore directory
+	NSArray *extras = [NSArray array];
+	if ([[projectController environmentVariables] objectForKey:@"TM_ACKMATE_IGNORE_DIRS"]) {
+		extras = [self addIgnoreDirsFromString:[[projectController environmentVariables] objectForKey:@"TM_ACKMATE_IGNORE_DIRS"]
+									   toArray:extras];
+	}
+	
+	// shell variables
+	for (NSDictionary *shellInfo in [[OakPreferencesManager sharedInstance] shellVariables]) {
+		if ([[shellInfo objectForKey:@"variable"] isEqualToString:@"TM_ACKMATE_IGNORE_DIRS"]) {
+			extras = [self addIgnoreDirsFromString:[shellInfo objectForKey:@"value"]
+										   toArray:extras];
+		}
+	}
+	[self.currentProcess invokeWithTerm:term
+								   path:path
+						   searchFolder:selectedSearchFolder
+								literal:literal
+								 nocase:nocase
+								  words:words
+								context:context
+							   symlinks:symlinks
+						  folderPattern:folderPattern
+								options:[optionsField objectValue]
+								 extras:extras];
+}
+
+-(NSArray *) addIgnoreDirsFromString:(NSString *)value toArray:(NSArray *)options
+{
+	NSLog(@"Adding ignore dirs: %@", value);
+	NSArray *ignoreDirs = [value componentsSeparatedByString:@","];
+	for (NSString *ignoreDir in ignoreDirs) {
+		options = [options arrayByAddingObject:@"--ignore-dir"];
+		options = [options arrayByAddingObject:ignoreDir];
+	}
+	return options;
 }
 
 - (void)flagsChanged:(NSEvent*)event
@@ -397,9 +427,12 @@ NSString * const kJPAckWindowPosition = @"kJPAckWindowPosition";
   {
     if ([option isEqualToString:@"--"] || [option isEqualToString:@"-"] || [option isEqualToString:@"--match"] || [option hasPrefix:@"--ackmate"])
       continue;
-
-    if ([option hasPrefix:@"-"] || [ackTypes containsObject:option])
-      [okayOptions addObject:option];
+	
+	if ([option hasPrefix:@":"]) {
+	  [okayOptions addObject:[option stringByReplacingOccurrencesOfString:@":" withString:@"--type-add "]];
+	} else if ([option hasPrefix:@"-"] || [ackTypes containsObject:option]) {
+	  [okayOptions addObject:option];
+	}
   }
   return okayOptions;
 }
